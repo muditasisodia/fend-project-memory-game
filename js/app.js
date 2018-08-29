@@ -1,36 +1,61 @@
-/*
- * Create a list that holds all of your cards
- */
 const symbols = ["fa fa-diamond", "fa fa-diamond", "fa fa-paper-plane-o", "fa fa-paper-plane-o", "fa fa-anchor", "fa fa-anchor", "fa fa-bolt", "fa fa-bolt", "fa fa-cube", "fa fa-cube", "fa fa-leaf", "fa fa-leaf", "fa fa-bicycle", "fa fa-bicycle", "fa fa-bomb", "fa fa-bomb"];
 var matched = [];
 var open = [];
+var moves;
+const ratingContainer = document.querySelector(".stars");
 
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
- const shuffled = shuffle(symbols);
+ function init(){
+   //Clearing deck
+   document.querySelector('.deck').innerHTML = "";
 
- //displaying card grid
- const myDocFrag = document.createDocumentFragment();
- for(let i = 0; i<shuffled.length; i++) {
-   var card = document.createElement("li");
-   card.className = "card";
-   var symbol = document.createElement("i");
-   symbol.className = shuffled[i];
-   card.appendChild(symbol);
-   myDocFrag.appendChild(card);
+   //Hiding modal
+    $('#myModal').modal("hide");
 
-   card.addEventListener("click", function() {
-     this.classList.add("show", "open");
-     addToOpen(this);
-   });
+   /*
+    * Create a list that holds all of your cards
+    */
+
+   matched = [];
+   open = [];
+   moves = 0;
+
+   //After reset, moves should be reset to 0
+   moveDisplay.innerHTML = moves;
+
+   //After reset, starts should be set to 3
+   starFlag =3;
+   ratingContainer.innerHTML = `<li><i class="fa fa-star"></i></li>
+   <li><i class="fa fa-star"></i></li>
+   <li><i class="fa fa-star"></i></li>`;
+
+   /*
+    * Display the cards on the page
+    *   - shuffle the list of cards using the provided "shuffle" method below
+    *   - loop through each card and create its HTML
+    *   - add each card's HTML to the page
+    */
+    const shuffled = shuffle(symbols);
+
+    //displaying card grid
+    const myDocFrag = document.createDocumentFragment();
+    for(let i = 0; i<shuffled.length; i++) {
+      var card = document.createElement("li");
+      card.className = "card";
+      var symbol = document.createElement("i");
+      symbol.className = shuffled[i];
+      card.appendChild(symbol);
+      myDocFrag.appendChild(card);
+
+      card.addEventListener("click", function() {
+        this.classList.add("show", "open");
+        addToOpen(this);
+      });
+    }
+
+    var deck = document.querySelector(".deck");
+    deck.appendChild(myDocFrag);
+
  }
-
- var deck = document.querySelector(".deck");
- deck.appendChild(myDocFrag);
 
  //Adding card to list of open cards
  function addToOpen(cardToOpen){
@@ -38,7 +63,7 @@ var open = [];
    //created a class disabled to ensure that opened cards cannot be reopened and matched to themselves
    cardToOpen.classList.add("disabled");
    if(open.length === 2){
-
+     addMoves();
      //accessing class of i element within card
      var newSymbol = open[1].children[0].classList[1];
      var oldSymbol = open[0].children[0].classList[1];
@@ -65,16 +90,23 @@ var open = [];
    element.classList.add("match");
  }
 
-
  function closeCard(element) {
    element.classList.remove("show", "open", "disabled");
  }
 
-
  function isgameOver(){
    if(symbols.length === matched.length){
-     alert("game over");
+     //alert("game over");
+
+     $('#myModal').modal("show");
    }
+ }
+
+moveDisplay = document.querySelector(".moves");
+ function addMoves(){
+   moves++;
+   moveDisplay.innerHTML = moves;
+   rating();
  }
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -91,6 +123,24 @@ function shuffle(array) {
 
     return array;
 }
+
+const restart = document.querySelector(".restart");
+restart.addEventListener("click", function(){
+  init();
+});
+
+function rating() {
+  switch(moves)
+  {
+    case 10: ratingContainer.innerHTML = `<li><i class="fa fa-star"></i></li>
+    <li><i class="fa fa-star"></i></li>`;
+    break;
+    case 15: ratingContainer.innerHTML = `<li><i class="fa fa-star"></i></li>`;
+    break;
+  }
+}
+
+init();
 
 /*
  * set up the event listener for a card. If a card is clicked:
