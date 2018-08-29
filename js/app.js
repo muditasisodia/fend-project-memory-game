@@ -2,6 +2,8 @@ const symbols = ["fa fa-diamond", "fa fa-diamond", "fa fa-paper-plane-o", "fa fa
 var matched = [];
 var open = [];
 var moves;
+var initTime;
+var timer;
 const ratingContainer = document.querySelector(".stars");
 
  function init(){
@@ -22,11 +24,37 @@ const ratingContainer = document.querySelector(".stars");
    //After reset, moves should be reset to 0
    moveDisplay.innerHTML = moves;
 
+   //Setting timer to display 00:00
+   document.querySelector('.time-taken').innerHTML = "00:00";
+
    //After reset, starts should be set to 3
-   starFlag =3;
    ratingContainer.innerHTML = `<li><i class="fa fa-star"></i></li>
    <li><i class="fa fa-star"></i></li>
    <li><i class="fa fa-star"></i></li>`;
+
+   //Setting timer to initial time
+   initTime = new Date().getTime();
+
+   timer = setInterval(function() {
+      var now = new Date().getTime();
+
+      // Find the time elapsed between now and intial
+      var elapsed = now - initTime;
+
+      // Time calculation for minutes and seconds
+      let min = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+      let sec = Math.floor((elapsed % (1000 * 60)) / 1000);
+
+      // If seconds<10 then prepend 0
+      if (sec < 10) {
+        sec = "0" + sec;
+      }
+
+      let elapsedDisplay = min + ":" + sec;
+
+      // Update clock on game screen and modal
+      document.querySelector(".time-taken").innerHTML = elapsedDisplay;
+    }, 1000);
 
    /*
     * Display the cards on the page
@@ -96,8 +124,19 @@ const ratingContainer = document.querySelector(".stars");
 
  function isgameOver(){
    if(symbols.length === matched.length){
-     //alert("game over");
 
+     //Stop timer
+     clearInterval(timer);
+
+     //Setting timer value in final-time
+     var finalTime = document.querySelector('.time-taken').innerHTML;
+     document.querySelector('.final-time').innerHTML = finalTime;
+
+     //Setting rating in stars class in final-stars
+     var finalStars = ratingContainer.innerHTML;
+     document.querySelector('.final-stars').innerHTML = finalStars;
+
+     //Display congratulatory modal
      $('#myModal').modal("show");
    }
  }
